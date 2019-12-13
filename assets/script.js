@@ -59,7 +59,7 @@ function fiveDays() {
           // console.log(response.list[i].main.temp)
           var tempF = (response.list[i].main.temp - 273.15) * 1.80 + 32;
           // console.log(tempF);
-          var date = response.list[0].dt_txt;
+          var date = response.list[i].dt_txt;
           date = moment.parseZone(date).format('MMM Do YYYY');
           var container=$("<div>")
           container.addClass("container")
