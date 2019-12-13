@@ -7,6 +7,7 @@ var uvIndex = $(".uv-index");
 var inputText = $(".input-text")
 var searchButton = $(".search-button")
 var cityList = []
+getCityButton()
 
 function oneDay() {
   var citys = $(this).attr("data-name")
@@ -74,7 +75,8 @@ function fiveDays() {
           $(".forecast").append(container)
           // console.log(response.list[i].dt_txt[3])
 
-
+         
+          
 
         }
       }
@@ -95,14 +97,43 @@ function pageButtons() {
 
 searchButton.on("click", function (event) {
   event.preventDefault();
-  var typedCity = inputText.val().trim()
+  if(inputText.val()!=="")
+{  var typedCity = inputText.val().trim()
   inputText.val("")
   
   cityList.push(typedCity)
+  console.log(cityList);}
+  if(cityList.length>=6){
+    cityList.shift()
+  }
+  
+    localStorage.setItem(
+      "selected-citys",
+      JSON.stringify(cityList)
+    );
+  
+  
+  
   pageButtons()
+  
+  
 })
+function getCityButton() {
+  var preferences = JSON.parse(localStorage.getItem("selected-citys"));
+
+  if (preferences!==null) {
+cityList=preferences
+
+    
+  }
+
+  pageButtons()
+fiveDays()
+}
+
+
 
 $(document).on("click", ".button", oneDay);
 $(document).on("click", ".button", fiveDays);
-pageButtons()
-fiveDays()
+// pageButtons()
+// fiveDays()
