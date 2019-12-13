@@ -1,77 +1,108 @@
 
-var city=$(".city")
-var temperature=$(".temperature");
-var humidity=$("humidity")
-var windSpeed=$(".wind-speed");
-var uvIndex=$(".uv-index");
-var inputText=$(".input-text")
-var searchButton=$(".search-button")
-var cityList=[]
+var city = $(".city")
+var temperature = $(".temperature");
+var humidity = $(".humidity")
+var windSpeed = $(".wind-speed");
+var uvIndex = $(".uv-index");
+var inputText = $(".input-text")
+var searchButton = $(".search-button")
+var cityList = []
 
-
-
-
-
-function oneDay(){
-    var citys = $(this).attr("data-name")
-    console.log(this);
-    
-    var APIKey = "aa5de4428e44b6b7f439fdbfbcc1782e";
-    var queryURL = "http://api.openweathermap.org/data/2.5/weather?q="+citys+"&appid="+APIKey;
-$.ajax({
+function oneDay() {
+  var citys = $(this).attr("data-name")
+  var APIKey = "aa5de4428e44b6b7f439fdbfbcc1782e";
+  var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + citys + "&appid=" + APIKey;
+  $.ajax({
     url: queryURL,
     method: "GET"
   })
-    // We store all of the retrieved data inside of an object called "response"
-    .then(function(response) {
-        console.log(response);
-        var tempF = (response.main.temp - 273.15) * 1.80 + 32;
-        temperature.text("Temperature (F) " +tempF)
-        humidity.text("Humidity: " + response.main.humidity)
-        windSpeed.text("Wind Speed: " + response.wind.speed)
+    .then(function (response) {
 
-
-      // Transfer content to HTML
-    //   $(".city").html("<h1>" + response.name + " Weather Details</h1>");
-    //   $(".wind").text("Wind Speed: " + response.wind.speed);
-    //   $(".humidity").text("Humidity: " + response.main.humidity);
-    //   $(".temp").text("Temperature (F) " + response.main.temp);
-
-    //   // Converts the temp to Kelvin with the below formula
-    //   var tempF = (response.main.temp - 273.15) * 1.80 + 32;
-    //   $(".tempF").text("Temperature (Kelvin) " + tempF);
-
-    //   // Log the data in the console as well
-    //   console.log("Wind Speed: " + response.wind.speed);
-    //   console.log("Humidity: " + response.main.humidity);
-    //   console.log("Temperature (F): " + response.main.temp);
+      var tempF = (response.main.temp - 273.15) * 1.80 + 32;
+      city.html(response.name)
+      temperature.text("Temperature (F) : " + tempF.toFixed(1))
+      humidity.text("Humidity: " + response.main.humidity)
+      windSpeed.text("Wind Speed: " + response.wind.speed)
+      var lat = response.coord.lat
+      var lon = response.coord.lon
+      uvIn(APIKey, lat, lon)
     });
 }
-function pageButtons(){
-    for(var i=0;i<cityList.length;i++)
-    var mkBtn = $("<button>");
-          // Adding a class of movie-btn to our button
-          mkBtn.addClass("city-Btn");
-          // Adding a data-attribute
-          console.log(cityList);
+function uvIn(APIKey, lat, lon, ) {
+  var queryURL = "https://api.openweathermap.org/data/2.5/uvi?lat=" + lat + "&lon=" + lon + "&appid=" + APIKey;
+  $.ajax({
+    url: queryURL,
+    method: "GET"
+  })
+    .then(function (response) {
+      uvIndex.text(" UV index : " + response.value)
+
+    });
+}
+function fiveDays() {
+  var citys = $(this).attr("data-name")
+  var APIKey = "aa5de4428e44b6b7f439fdbfbcc1782e";
+  var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + citys + "&appid=" + APIKey;
+  $.ajax({
+    url: queryURL,
+    method: "GET"
+  })
+    .then(function (response) {
+      $(".forecast").empty();
+      var items = 39
+
+      for (var i = 0; i < items; i++) {
+        
+
+        if (response.list[i].dt_txt.indexOf("03:00:00") !== -1) {
           
-          mkBtn.attr("data-name", cityList[i]);
-          // Providing the initial button text
-          mkBtn.text(cityList[i]);
-          // Adding the button to the buttons-view div
-          $(".search-bar").append(mkBtn);
+          // console.log(response.list[i].main.temp)
+          var tempF = (response.list[i].main.temp - 273.15) * 1.80 + 32;
+          // console.log(tempF);
+          var date = response.list[0].dt_txt;
+          date = moment.parseZone(date).format('MMM Do YYYY');
+          var container=$("<div>")
+          container.addClass("container")
+          var dayOfWeek = $("<h2>")
+          dayOfWeek.html(date)
+          var temperature = $("<div>")
+          temperature.text("Temperature (F) : " + tempF.toFixed(1))
+          var humidity = $("<div>")
+          humidity.text("Humidity: " + response.list[i].main.humidity)
+          container.append(dayOfWeek,temperature, humidity)
+          
+          $(".forecast").append(container)
+          // console.log(response.list[i].dt_txt[3])
+
+
+
+        }
+      }
+    });
 }
 
-searchButton.on("click",function(event){
-    event.preventDefault();
-    var typedCity=inputText.val().trim()
-    inputText.val("")
-    city.html(typedCity)
-    cityList.push(typedCity)
+function pageButtons() {
+  $(".buttons-here").empty();
+  for (var i = 0; i < cityList.length; i++) {
+    var mkBtn = $("<button>");
+    mkBtn.addClass("button");
 
+    mkBtn.attr("data-name", cityList[i]);
+    mkBtn.text(cityList[i]);
+    $(".buttons-here").append(mkBtn);
+  }
+}
+
+searchButton.on("click", function (event) {
+  event.preventDefault();
+  var typedCity = inputText.val().trim()
+  inputText.val("")
+  
+  cityList.push(typedCity)
   pageButtons()
-    
 })
 
-
-$(document).on("click", ".cityBtn", oneDay);
+$(document).on("click", ".button", oneDay);
+$(document).on("click", ".button", fiveDays);
+pageButtons()
+fiveDays()

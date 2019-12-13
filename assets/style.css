@@ -37,6 +37,11 @@ body{
     flex-direction: column;
     justify-content: center;
 }
+.buttons-here{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 button{
     max-width: 40%;
     min-height: 5vh;
@@ -44,7 +49,7 @@ button{
     
 }
 input{
-    min-height: 8vh;
+    min-height: 5vh;
     margin: 5%;
 }
 .todays-weather{
@@ -60,4 +65,12 @@ input{
     background-color: rgb(95, 99, 160);
     margin-top: 3%;
     opacity: .7;
+    display: flex;
+    justify-content: space-between;
 }
+.container{
+    
+}
+
+
+
