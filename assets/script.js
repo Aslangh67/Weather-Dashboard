@@ -65,9 +65,9 @@ function fiveDays() {
           container.addClass("container")
           var dayOfWeek = $("<h2>")
           dayOfWeek.html(date)
-          var temperature = $("<div>")
+          var temperature = $("<h4>")
           temperature.text("Temperature (F) : " + tempF.toFixed(1))
-          var humidity = $("<div>")
+          var humidity = $("<h4>")
           humidity.text("Humidity: " + response.list[i].main.humidity)
           container.append(dayOfWeek,temperature, humidity)
           
